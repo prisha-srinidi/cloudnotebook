@@ -3,6 +3,9 @@ const User = require("../models/User");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
+var jwt = require("jsonwebtoken");
+
+const JWT_SECRET = "Harryisagoodb$oy";
 
 router.post(
   "/createuser",
@@ -34,12 +37,21 @@ router.post(
         email: req.body.email,
       });
 
+      const data = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      const authtoken = jwt.sign(data, JWT_SECRET);
+      // console.log(jwtData);
+
       // .then((user) => res.json(user))
       //   .catch((err) => {
       //     console.log(err);
       //     res.json({ error: "Please enter a unique val", message: err.message });
       //   });
-      res.json({ Nice: "nice" });
+      res.json({ authtoken });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("some error has occured");
