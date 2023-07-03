@@ -19,7 +19,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "both": "concurrently \"npm run start\"   \"nodemon backend/index.js\""
+    "both": "concurrently \"npm run start\"   \"nodemon backend/index.js\"",
+    "proxy": "http://localhost:3000"
   },
   "eslintConfig": {
     "extends": [

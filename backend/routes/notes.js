@@ -45,8 +45,8 @@ router.post(
 );
 
 router.put("/updatenote/:id", fetchuser, async (req, res) => {
+  const { title, description, tag } = req.body;
   try {
-    const { title, description, tag } = req.body;
     //creating a new note object
     const newNote = {};
     if (title) {
@@ -67,7 +67,7 @@ router.put("/updatenote/:id", fetchuser, async (req, res) => {
     }
 
     if (note.user.toString() !== req.user.id) {
-      return res.status(401).send("unauthorised access");
+      return res.status(401).send("not allowed");
     }
 
     note = await Note.findByIdAndUpdate(
@@ -84,8 +84,6 @@ router.put("/updatenote/:id", fetchuser, async (req, res) => {
 
 router.delete("/deletenote/:id", fetchuser, async (req, res) => {
   try {
-    const { title, description, tag } = req.body;
-
     //find existing note by id and delete
 
     let note = await Note.findById(req.params.id);
@@ -94,7 +92,7 @@ router.delete("/deletenote/:id", fetchuser, async (req, res) => {
     }
 
     if (note.user.toString() !== req.user.id) {
-      return res.status(401).send("unauthorised access");
+      return res.status(401).send("not allowed");
     }
 
     note = await Note.findByIdAndDelete(req.params.id);
