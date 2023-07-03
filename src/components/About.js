@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import React, { useContext, useEffect } from "react";
 
 const About = () => {
