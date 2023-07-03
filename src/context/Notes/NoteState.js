@@ -62,7 +62,18 @@ const NoteState = (props) => {
   const [notes, setNotes] = useState(notesInitial);
 
   //add a note
-  const addNote = () => {};
+  const addNote = () => {
+    const note = {
+      _id: "64a2ae0270d3136d8f9d6a30",
+      user: "64a1bfe57ee2d283a9c58f41",
+      title: "myfirstnote",
+      description: "dev is easy. just open your eyes",
+      tag: "general",
+      date: "2023-07-03T11:16:18.949Z",
+      __v: 0,
+    };
+    setNotes(notes.push(note));
+  };
 
   //delete a note
 
