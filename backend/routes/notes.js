@@ -22,24 +22,22 @@ router.post(
     body("description", "min length of description is 5").isLength({ min: 5 }),
   ],
   async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
     try {
-      const { title, description, tag } = req.body;
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
-      const note = new Note({
-        title,
-        description,
-        tag,
+      const note = await Note.create({
         user: req.user.id,
+        title: req.body.title,
+        description: req.body.description,
+        tag: req.body.tag,
       });
-      const savedNote = await note.save();
-      res.json(savedNote);
+
+      res.send(note);
     } catch (error) {
-      console.error(error.message);
-      res.status(500).send("Internal Server Error");
+      console.log(error.message);
+      res.status(500).send("Internal server error has occured");
     }
   }
 );
@@ -98,7 +96,7 @@ router.delete("/deletenote/:id", fetchuser, async (req, res) => {
     note = await Note.findByIdAndDelete(req.params.id);
     res.json({ Success: "note has been successfully deleted", note: note });
   } catch (error) {
-    console.error(error.message);
+    console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
 });
