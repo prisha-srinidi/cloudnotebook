@@ -2,13 +2,18 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import noteContext from "../context/Notes/noteContext";
 import Noteitem from "./NoteItem";
 import AddNote from "./AddNote";
+import { useHistory } from "react-router";
 
-const Notes = () => {
+const Notes = (props) => {
   const context = useContext(noteContext);
   const { notes, getNotes, editNote } = context;
+  const history = useHistory();
   useEffect(() => {
-    getNotes();
-    // eslint-disable-next-line
+    if (localStorage.getItem("token")) {
+      getNotes();
+    } else {
+      history.pushState("/login");
+    }
   }, []);
   const ref = useRef(null);
   const refClose = useRef(null);
@@ -32,6 +37,7 @@ const Notes = () => {
   const handleClick = (e) => {
     editNote(note.id, note.etitle, note.edescription, note.etag);
     refClose.current.click();
+    props.showAlert("updated successfully", "success");
   };
 
   const onChange = (e) => {
@@ -40,7 +46,7 @@ const Notes = () => {
 
   return (
     <>
-      <AddNote />
+      <AddNote showAlert={props.showAlert} />
       <button
         ref={ref}
         type="button"
@@ -84,23 +90,20 @@ const Notes = () => {
                     value={note.etitle}
                     aria-describedby="emailHelp"
                     onChange={onChange}
-                    minLength={5}
-                    required
                   />
                 </div>
                 <div className="mb-3">
                   <label htmlFor="description" className="form-label">
                     Description
                   </label>
-                  <input
+                  <textarea
                     type="text"
+                    rows={4}
                     className="form-control"
                     id="edescription"
                     name="edescription"
                     value={note.edescription}
                     onChange={onChange}
-                    minLength={5}
-                    required
                   />
                 </div>
                 <div className="mb-3">
@@ -149,7 +152,12 @@ const Notes = () => {
         </div>
         {notes.map((note) => {
           return (
-            <Noteitem key={note._id} updateNote={updateNote} note={note} />
+            <Noteitem
+              key={note._id}
+              updateNote={updateNote}
+              showAlert={props.showAlert}
+              note={note}
+            />
           );
         })}
       </div>
