@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
 const router = express.Router();
-const { body, validationResult } = require("express-validator");
+const { body, validationResult, check } = require("express-validator");
 const bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 var fetchuser = require("../middleware/fetchuser");
@@ -14,6 +14,15 @@ router.post(
     body("name", "enter valid name").isLength({ min: 3 }),
     body("password", "min length is 6 characters").isLength({ min: 5 }),
     body("email", "enter valid email id").isEmail(),
+    check("cpassword", "Password must be of atleast 5 characters")
+      .isLength({ min: 5 })
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Passwords didn't match");
+        } else {
+          return value;
+        }
+      }),
   ],
 
   async (req, res) => {
@@ -27,12 +36,10 @@ router.post(
     try {
       let user = await User.findOne({ email: req.body.email });
       if (user) {
-        return res
-          .status(400)
-          .json({
-            success,
-            error: "sorry a user with the entered email id already exists",
-          });
+        return res.status(400).json({
+          success,
+          error: "sorry a user with the entered email id already exists",
+        });
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -63,7 +70,7 @@ router.post(
   "/login",
   [
     body("email", "enter valid email id").isEmail(),
-    body("password", "password cannot be blank").exists(),
+    body("password", "password cannot be blank").notEmpty(),
   ],
 
   async (req, res) => {
@@ -78,7 +85,7 @@ router.post(
       if (!user) {
         return res
           .status(400)
-          .json({ error: "please login with correct email" });
+          .json({ success, error: "please login with correct email" });
       }
       const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
@@ -98,7 +105,7 @@ router.post(
       success = true;
       res.json({ success, authtoken });
     } catch (error) {
-      console.error(error.message);
+      console.log(error.message);
       res.status(500).send("Internal Server Error");
     }
   }
@@ -106,11 +113,11 @@ router.post(
 
 router.post("/getuser", fetchuser, async (req, res) => {
   try {
-    userId = req.user.id;
-    const user = await User.findById(userId).select("-password");
+    const userId = req.user.id;
+    let user = await User.findById(userId).select("-password");
     res.send(user);
   } catch (error) {
-    console.error(error.message);
+    console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
 });

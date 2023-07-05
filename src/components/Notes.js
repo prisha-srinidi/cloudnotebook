@@ -12,7 +12,7 @@ const Notes = (props) => {
     if (localStorage.getItem("token")) {
       getNotes();
     } else {
-      history.pushState("/login");
+      history.push("/login");
     }
   }, []);
   const ref = useRef(null);
