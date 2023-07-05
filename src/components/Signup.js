@@ -2,18 +2,19 @@ import React, { useState } from "react";
 import { useHistory, Link } from "react-router-dom";
 
 const Signup = (props) => {
+  const host = "http://localhost:5000";
   const [credentials, setCredentials] = useState({
     name: "",
     email: "",
     password: "",
-    cpassword: "",
+    // cpassword: "",
   });
   let history = useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { name, email, password } = credentials;
-    const response = await fetch("http://localhost:5000/api/auth/createuser", {
+    const response = await fetch(`${host}/api/auth/createuser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -77,11 +78,10 @@ const Signup = (props) => {
             id="password"
             name="password"
             onChange={onChange}
-            minLength={5}
             required
           />
         </div>
-        <div className="mb-3">
+        {/* <div className="mb-3">
           <label htmlFor="cpassword" className="form-label">
             Confirm Password
           </label>
@@ -91,10 +91,9 @@ const Signup = (props) => {
             id="cpassword"
             name="cpassword"
             onChange={onChange}
-            minLength={5}
             required
           />
-        </div>
+        </div> */}
 
         <button type="submit" className="btn btn-primary">
           SignUp

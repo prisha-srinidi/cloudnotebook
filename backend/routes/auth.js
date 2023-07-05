@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
 const router = express.Router();
-const { body, validationResult, check } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 var fetchuser = require("../middleware/fetchuser");
@@ -14,15 +14,17 @@ router.post(
     body("name", "enter valid name").isLength({ min: 3 }),
     body("password", "min length is 6 characters").isLength({ min: 5 }),
     body("email", "enter valid email id").isEmail(),
-    check("cpassword", "Password must be of atleast 5 characters")
-      .isLength({ min: 5 })
-      .custom((value, { req }) => {
-        if (value !== req.body.password) {
-          throw new Error("Passwords didn't match");
-        } else {
-          return value;
-        }
-      }),
+    // check("cpassword", "Password must be of atleast 5 characters")
+    //   .isLength({ min: 5 })
+    //   .custom((value, { req }) => {
+    //     if (value !== req.body.password) {
+    //       console.log(val);
+    //       console.log(req.body.password);
+    //       throw new Error("Passwords didn't match");
+    //     } else {
+    //       return value;
+    //     }
+    //   }),
   ],
 
   async (req, res) => {
@@ -41,7 +43,7 @@ router.post(
           error: "sorry a user with the entered email id already exists",
         });
       }
-
+      console.log(req);
       const salt = await bcrypt.genSalt(10);
       const secPass = await bcrypt.hash(req.body.password, salt);
       user = await User.create({
